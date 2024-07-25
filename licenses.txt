@@ -1,0 +1,249 @@
++-------------------------------------+----------------------------------------------------------------------+
+|               Package               |                               License                                |
++-------------------------------------+----------------------------------------------------------------------+
+|           about-time 4.2.1          |                                 MIT                                  |
+|         alive-progress 3.1.5        |                                 MIT                                  |
+|            appdirs 1.4.4            |                                 MIT                                  |
+|               arff 0.9              |                               UNKNOWN                                |
+|          argon2-cffi 23.1.0         |                         (Licence not found)                          |
+|     argon2-cffi-bindings 21.2.0     |                                 MIT                                  |
+|            argparse 1.4.0           |                  Python Software Foundation License                  |
+|             astor 0.8.1             |                             BSD-3-Clause                             |
+|           asttokens 2.4.1           |                              Apache 2.0                              |
+|             attrs 23.2.0            |                         (Licence not found)                          |
+|            autograd 1.6.2           |                                 MIT                                  |
+|         autograd-gamma 0.5.0        |                             MIT License                              |
+|        beautifulsoup4 4.12.2        |                         (Licence not found)                          |
+|            blessed 1.20.0           |                                 MIT                                  |
+|             boto3 1.29.2            |                          Apache License 2.0                          |
+|           botocore 1.32.2           |                          Apache License 2.0                          |
+|             build 1.0.3             |                         (Licence not found)                          |
+|            cattrs 23.2.3            |                                 MIT                                  |
+|          certifi 2023.7.22          |                               MPL-2.0                                |
+|             cffi 1.16.0             |                                 MIT                                  |
+|       charset-normalizer 3.3.2      |                                 MIT                                  |
+|             click 8.1.7             |                             BSD-3-Clause                             |
+|          cloudpickle 2.2.1          |                         BSD 3-Clause License                         |
+|              cma 3.2.2              |                                 BSD                                  |
+|            colorama 0.4.6           |                         (Licence not found)                          |
+|              comm 0.2.0             |                         BSD 3-Clause License                         |
+|          ConfigSpace 0.7.1          |                            # ConfigSpace                             |
+|          contextlib2 21.6.0         |                             PSF License                              |
+|           contourpy 1.2.0           |                         BSD 3-Clause License                         |
+|            cycler 0.12.1            |                Copyright (c) 2015, matplotlib project                |
+|            Cython 3.0.10            |                         (Licence not found)                          |
+|            dask 2023.12.1           |                             BSD-3-Clause                             |
+|         dask-jobqueue 0.8.2         |                             BSD 3-Clause                             |
+|           dataclasses 0.6           |                                Apache                                |
+|         debtcollector 2.5.0         |                               UNKNOWN                                |
+|            debugpy 1.8.1            |                                 MIT                                  |
+|           decorator 5.1.1           |                           new BSD License                            |
+|          Deprecated 1.2.14          |                                 MIT                                  |
+|              dill 0.3.7             |                             BSD-3-Clause                             |
+|        distributed 2023.12.1        |                             BSD-3-Clause                             |
+|             emcee 3.1.0             |                                 MIT                                  |
+|              ete3 3.1.3             |                                GPLv3                                 |
+|         exceptiongroup 1.1.3        |                         (Licence not found)                          |
+|           executing 2.0.1           |                                 MIT                                  |
+|            fasteners 0.19           |                              Apache-2.0                              |
+|        fastjsonschema 2.19.0        |                                 BSD                                  |
+|         fhconfparser 2024.1         |                                 MIT                                  |
+|           filelock 3.13.1           |                         (Licence not found)                          |
+|           fonttools 4.44.3          |                                 MIT                                  |
+|           formulaic 0.6.6           |                         (Licence not found)                          |
+|           fsspec 2023.10.0          |                                 BSD                                  |
+|            future 0.18.3            |                                 MIT                                  |
+|      fvcore 0.1.5.post20210630      |                              Apache 2.0                              |
+|             gdown 4.7.1             |                                 MIT                                  |
+|          google-pasta 0.2.0         |                              Apache 2.0                              |
+|            gpustat 1.1.1            |                                 MIT                                  |
+|              GPy 1.13.1             |                             BSD 3-clause                             |
+|             grakel 0.1.8            |                                 BSD                                  |
+|            grapheme 0.6.0           |                                 MIT                                  |
+|           graphviz 0.20.1           |                                 MIT                                  |
+|           hpobench 0.0.10           |                              Apache-2.0                              |
+|          hypermapper 2.2.13         |                         (Licence not found)                          |
+|            icecream 2.1.3           |                                 MIT                                  |
+|               idna 3.4              |                         (Licence not found)                          |
+|            imageio 2.32.0           |                             BSD-2-Clause                             |
+|       importlib-metadata 6.8.0      |                         (Licence not found)                          |
+|      importlib-resources 6.1.1      |                         (Licence not found)                          |
+|           iniconfig 2.0.0           |                         (Licence not found)                          |
+|         interface-meta 1.3.0        |                                 MIT                                  |
+|            iopath 0.1.10            |              MIT licensed, as found in the LICENSE file              |
+|           ipykernel 6.29.4          |                         BSD 3-Clause License                         |
+|            ipython 8.18.1           |                             BSD-3-Clause                             |
+|           ipywidgets 8.1.1          |                         BSD 3-Clause License                         |
+|            iso8601 2.1.0            |                                 MIT                                  |
+|           jahs-bench 1.1.0          |                                 MIT                                  |
+|             jedi 0.19.1             |                                 MIT                                  |
+|             Jinja2 3.1.2            |                             BSD-3-Clause                             |
+|            jmespath 1.0.1           |                                 MIT                                  |
+|             joblib 1.3.2            |                             BSD 3-Clause                             |
+|          jsonschema 4.20.0          |                                 MIT                                  |
+| jsonschema-specifications 2023.11.1 |                                 MIT                                  |
+|         jupyter-client 8.6.1        |                         BSD 3-Clause License                         |
+|          jupyter-core 5.5.0         |                         BSD 3-Clause License                         |
+|       jupyterlab-widgets 3.0.9      |                             BSD-3-Clause                             |
+|           kiwisolver 1.4.5          |                      =========================                       |
+|          lark-parser 0.12.0         |                                 MIT                                  |
+|           liac-arff 2.5.0           |                             MIT License                              |
+|           lifelines 0.27.8          |                                 MIT                                  |
+|            lightgbm 3.2.1           |                     The MIT License (Microsoft)                      |
+|             locket 1.0.0            |                             BSD-2-Clause                             |
+|             loguru 0.7.2            |                             MIT license                              |
+|             Markdown 3.6            |                         BSD 3-Clause License                         |
+|         markdown-it-py 3.0.0        |                         (Licence not found)                          |
+|           MarkupSafe 2.1.3          |                             BSD-3-Clause                             |
+|           matplotlib 3.7.3          |                                 PSF                                  |
+|       matplotlib-inline 0.1.6       |                             BSD 3-Clause                             |
+|             mdurl 0.1.2             |                         (Licence not found)                          |
+|             minio 7.2.3             |                              Apache-2.0                              |
+|        more-itertools 10.1.0        |                         (Licence not found)                          |
+|             mpmath 1.3.0            |                                 BSD                                  |
+|            msgpack 1.0.7            |                              Apache 2.0                              |
+|         multiprocess 0.70.15        |                             BSD-3-Clause                             |
+|        nasbench-pytorch 1.3.1       |                          Apache License 2.0                          |
+|             naslib 0.1.0            |                          Apache License 2.0                          |
+|            nbformat 5.9.2           |                         BSD 3-Clause License                         |
+|          nest-asyncio 1.6.0         |                                 BSD                                  |
+|            netaddr 0.9.0            |                             BSD License                              |
+|           netifaces 0.11.0          |                             MIT License                              |
+|            networkx 2.6.3           |                               UNKNOWN                                |
+|            ngboost 0.3.11           |                              Apache-2.0                              |
+|              nose 1.3.7             |                               GNU LGPL                               |
+|             numpy 1.24.4            |                             BSD-3-Clause                             |
+|     nvidia-cublas-cu12 12.1.3.1     |                     NVIDIA Proprietary Software                      |
+|   nvidia-cuda-cupti-cu12 12.1.105   |                     NVIDIA Proprietary Software                      |
+|   nvidia-cuda-nvrtc-cu12 12.1.105   |                     NVIDIA Proprietary Software                      |
+|  nvidia-cuda-runtime-cu12 12.1.105  |                     NVIDIA Proprietary Software                      |
+|      nvidia-cudnn-cu12 8.9.2.26     |                     NVIDIA Proprietary Software                      |
+|     nvidia-cufft-cu12 11.0.2.54     |                     NVIDIA Proprietary Software                      |
+|    nvidia-curand-cu12 10.3.2.106    |                     NVIDIA Proprietary Software                      |
+|   nvidia-cusolver-cu12 11.4.5.107   |                     NVIDIA Proprietary Software                      |
+|   nvidia-cusparse-cu12 12.1.0.106   |                     NVIDIA Proprietary Software                      |
+|       nvidia-ml-py 12.535.133       |                                 BSD                                  |
+|       nvidia-nccl-cu12 2.18.1       |                     NVIDIA Proprietary Software                      |
+|    nvidia-nvjitlink-cu12 12.3.101   |                     NVIDIA Proprietary Software                      |
+|      nvidia-nvtx-cu12 12.1.105      |                     NVIDIA Proprietary Software                      |
+|            openml 0.14.1            |                             BSD 3-clause                             |
+|           opt-einsum 3.3.0          |                                 MIT                                  |
+|        oslo.concurrency 5.2.0       |                               UNKNOWN                                |
+|          oslo.config 9.2.0          |                               UNKNOWN                                |
+|           oslo.i18n 6.2.0           |                               UNKNOWN                                |
+|           oslo.utils 6.3.0          |                               UNKNOWN                                |
+|            packaging 24.0           |                         (Licence not found)                          |
+|             pandas 2.2.2            |                         BSD 3-Clause License                         |
+|             paramz 0.9.6            |                             BSD 3-clause                             |
+|             parso 0.8.3             |                                 MIT                                  |
+|             partd 1.4.1             |                                 BSD                                  |
+|             pathos 0.3.1            |                             BSD-3-Clause                             |
+|          pathvalidate 3.2.0         |                             MIT License                              |
+|             patsy 0.5.3             |                             2-clause BSD                             |
+|              pbr 6.0.0              |                               UNKNOWN                                |
+|            pexpect 4.8.0            |                             ISC license                              |
+|            Pillow 10.0.1            |                                 HPND                                 |
+|              pip 23.3.2             |                                 MIT                                  |
+|          pip-licenses 4.4.0         |                                 MIT                                  |
+|          platformdirs 4.0.0         |                         (Licence not found)                          |
+|            plotly 5.18.0            |                                 MIT                                  |
+|            pluggy 0.13.1            |                             MIT license                              |
+|               ply 3.11              |                                 BSD                                  |
+|          portalocker 2.8.2          |                             BSD-3-Clause                             |
+|              pox 0.3.3              |                             BSD-3-Clause                             |
+|             ppft 1.7.6.7            |                             BSD-3-Clause                             |
+|          prettytable 3.10.0         |                            BSD (3 clause)                            |
+|        prompt-toolkit 3.0.41        |                         (Licence not found)                          |
+|           protobuf 4.25.1           |                         3-Clause BSD License                         |
+|             psutil 5.9.6            |                             BSD-3-Clause                             |
+|           ptyprocess 0.7.0          |                               UNKNOWN                                |
+|           pure-eval 0.2.2           |                                 MIT                                  |
+|              py 1.11.0              |                             MIT license                              |
+|            pyarrow 14.0.2           |                     Apache License, Version 2.0                      |
+|             pybnn 0.0.5             |                         BSD 3-Clause License                         |
+|            pycparser 2.21           |                                 BSD                                  |
+|         pycryptodome 3.19.1         |                          BSD, Public Domain                          |
+|             pyDOE 0.3.8             |                        BSD License (3-Clause)                        |
+|             pydot 1.4.2             |                                 MIT                                  |
+|             pydotz 1.5.1            |                                 MIT                                  |
+|           Pygments 2.16.1           |                             BSD-2-Clause                             |
+|            pymoo 0.6.0.1            |                          Apache License 2.0                          |
+|           pynisher 1.0.10           |                                 MIT                                  |
+|           pyparsing 3.1.1           |                         (Licence not found)                          |
+|        pyproject-hooks 1.0.0        |                         (Licence not found)                          |
+|             PyQt5 5.15.7            |                                GPL v3                                |
+|           PyQt5-Qt5 5.15.2          |                               LGPL v3                                |
+|          PyQt5-sip 12.13.0          |                                 SIP                                  |
+|             pyrfr 0.9.0             |                             BSD-3-Clause                             |
+|            pyro-api 0.1.2           |                          Apache License 2.0                          |
+|            pyro-ppl 1.8.6           |                              Apache 2.0                              |
+|              Pyro4 4.80             |                                 MIT                                  |
+|            PySocks 1.7.1            |                                 BSD                                  |
+|             pytest 6.2.4            |                                 MIT                                  |
+|        python-dateutil 2.8.2        |                             Dual License                             |
+|         pytorch-msssim 0.2.1        |                               UNKNOWN                                |
+|          pytz 2023.3.post1          |                                 MIT                                  |
+|           PyWavelets 1.4.1          |                                 MIT                                  |
+|             PyYAML 6.0.1            |                                 MIT                                  |
+|             pyzmq 25.1.1            |                               LGPL+BSD                               |
+|          referencing 0.31.0         |                                 MIT                                  |
+|           regex 2023.10.3           |                       Apache Software License                        |
+|           requests 2.31.0           |                              Apache 2.0                              |
+|         requests-cache 1.2.0        |                             BSD-2-Clause                             |
+|            rfc3986 2.0.0            |                              Apache 2.0                              |
+|             rich 13.7.1             |                                 MIT                                  |
+|            rpds-py 0.13.0           |                                 MIT                                  |
+|              rtpt 0.0.4             |                               UNKNOWN                                |
+|              s3fs 0.4.2             |                                 BSD                                  |
+|           s3transfer 0.7.0          |                          Apache License 2.0                          |
+|          sagemaker 2.197.0          |                          Apache License 2.0                          |
+|             schema 0.7.5            |                                 MIT                                  |
+|         scikit-image 0.19.2         |                             Modified BSD                             |
+|          scikit-learn 1.1.3         |                               new BSD                                |
+|             scipy 1.10.1            | Copyright (c) 2001-2002 Enthought, Inc. 2003-2022, SciPy Developers. |
+|             serpent 1.41            |                                 MIT                                  |
+|          setproctitle 1.3.3         |                             BSD-3-Clause                             |
+|          setuptools 69.0.3          |                         (Licence not found)                          |
+|              six 1.16.0             |                                 MIT                                  |
+|              smac 2.0.2             |                         BSD 3-Clause License                         |
+|      smdebug-rulesconfig 1.0.1      |                      Apache License Version 2.0                      |
+|        sortedcontainers 2.4.0       |                              Apache 2.0                              |
+|            soupsieve 2.5            |                         (Licence not found)                          |
+|            spflow 0.0.40            |                               UNKNOWN                                |
+|           stack-data 0.6.3          |                                 MIT                                  |
+|          statsmodels 0.14.0         |                             BSD License                              |
+|           stevedore 5.1.0           |                               UNKNOWN                                |
+|              sympy 1.12             |                                 BSD                                  |
+|           syne-tune 0.10.0          |                         (Licence not found)                          |
+|            tabulate 0.9.0           |                                 MIT                                  |
+|             tblib 1.7.0             |                             BSD-2-Clause                             |
+|            tenacity 8.2.3           |                              Apache 2.0                              |
+|          tensorwatch 0.9.1          |                                 MIT                                  |
+|           termcolor 2.3.0           |                                 MIT                                  |
+|         threadpoolctl 3.2.0         |                             BSD-3-Clause                             |
+|          tifffile 2023.7.10         |                                 BSD                                  |
+|             toml 0.10.2             |                                 MIT                                  |
+|             tomli 2.0.1             |                         (Licence not found)                          |
+|             toolz 0.12.0            |                                 BSD                                  |
+|             torch 2.1.1             |                                BSD-3                                 |
+|          torchvision 0.16.1         |                                 BSD                                  |
+|            tornado 6.3.3            |                              Apache-2.0                              |
+|             tqdm 4.61.1             |                        MPLv2.0, MIT Licences                         |
+|           traitlets 5.13.0          |                         BSD 3-Clause License                         |
+|          transforms3d 0.4.1         |                             BSD license                              |
+|             triton 2.1.0            |                         (Licence not found)                          |
+|       typing-extensions 4.8.0       |                         (Licence not found)                          |
+|            tzdata 2023.3            |                              Apache-2.0                              |
+|             ujson 5.8.0             |                         (Licence not found)                          |
+|         url-normalize 1.4.3         |                                 MIT                                  |
+|           urllib3 1.26.18           |                                 MIT                                  |
+|            wcwidth 0.2.10           |                                 MIT                                  |
+|             wheel 0.42.0            |                         (Licence not found)                          |
+|       widgetsnbextension 4.0.9      |                         BSD 3-Clause License                         |
+|             wrapt 1.16.0            |                                 BSD                                  |
+|            xgboost 1.5.0            |                              Apache-2.0                              |
+|           xmltodict 0.13.0          |                                 MIT                                  |
+|              yacs 0.1.8             |                               UNKNOWN                                |
+|              zict 3.0.0             |                                 BSD                                  |
+|             zipp 3.17.0             |                         (Licence not found)                          |
++-------------------------------------+----------------------------------------------------------------------+

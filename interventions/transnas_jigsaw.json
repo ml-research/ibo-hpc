@@ -1,0 +1,7 @@
+[
+    {
+        "type": "good",
+        "intervention": {"Op_0": 2, "Op_1": 2, "Op_2": 2, "Op_3": 3, "Op_4": 1},
+        "iteration": 5
+    }
+]

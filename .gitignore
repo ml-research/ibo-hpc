@@ -1,0 +1,10 @@
+__pycache__/
+smac3_output/
+data/
+*.pdf
+bopro_experiments/
+*.log
+*_output_samples.csv
+*.c
+*.egg-info/
+*/dist/

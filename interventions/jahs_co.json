@@ -1,0 +1,12 @@
+[
+    {
+        "type": "good",
+        "intervention": {"Op1": 4, "Op2": 3, "Op3": 3, "Op4": 1},
+        "iteration": 5
+    },
+    {
+        "type": "good",
+        "intervention": {"Op1": 4, "Op2": 3, "Op3": 3, "Op4": 1},
+        "iteration": 10
+    }
+]

@@ -1,0 +1,29 @@
+################################################################################
+# Example of ordinal hyperparameter with greater condition
+
+x1 ordinal {red, blue, green, yellow} [red]
+x2 categorical {yellow} [yellow]
+
+x2 | x1 > yellow
+
+################################################################################
+# Example of integer hyperparameter with greater condition
+int_parent integer [0, 3] [0]
+int_child integer [0, 3] [0]
+
+int_child | int_parent > 1
+
+################################################################################
+# Super-huge integer and float hyperparameters
+huge_integer integer [900000000,18000000000] [9000000000]
+huge_float real [900000000,18000000000] [9000000000]
+
+################################################################################
+# And and ors in conditions
+example_param_1 integer [0, 10] [0]
+example_param_2 integer [0, 10] [0]
+example_param_3 integer [0, 10] [0]
+example_param_4 integer [0, 10] [0]
+example_param_5 integer [0, 10] [0]
+
+example_param_1 | example_param_2 < 5 && example_param_3 > 5 || example_param_4 < 5 && example_param_5 > 5

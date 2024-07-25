@@ -1,0 +1,49 @@
+[
+    {
+        "type": "bad",
+        "kind": "point",
+        "intervention": {"Activation": 1, "LearningRate": 0.8201676371308472, "N": 15, "Op1": 3, "Op2": 4, "Op3": 1, "Op4": 2, "Resolution": 0.5096959403985494, "TrivialAugment": 0, "W": 14,
+         "WeightDecay": 0.002697686639935806, "epoch": 10},
+        "iteration": 5
+    },
+    {
+        "type": "good",
+        "kind": "point",
+        "intervention": {"N": 3, "W": 16, "Resolution": 1},
+        "iteration": 15
+    },
+    {
+        "type": "good",
+        "kind": "point",
+        "intervention": {"N": 3, "W": 16, "Resolution": 1},
+        "iteration": 5
+    },
+    {
+        "type": "good",
+        "kind": "point",
+        "intervention": {"N": 3, "W": 13, "Resolution": 2},
+        "iteration": 5
+    },
+    {
+        "type": "good",
+        "kind": "point",
+        "intervention": null,
+        "iteration": 20
+    },
+    {
+        "type": "good",
+        "kind": "dist",
+        "intervention": {"N": {"dist": "cat", "parameters": [1, 1, 1, 1e4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]},
+                         "W": {"dist": "cat", "parameters": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1e4]},
+                         "Resolution": {"dist": "uniform", "parameters": [0.98, 1.02]}},
+        "iteration": 5
+    },
+    {
+        "type": "good",
+        "kind": "dist",
+        "intervention": {"N": {"dist": "cat", "parameters": [1, 1, 1, 1e4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]},
+                         "W": {"dist": "cat", "parameters": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1e4]},
+                         "Resolution": {"dist": "gauss", "parameters": [1, 0.3]}},
+        "iteration": 5
+    }
+]

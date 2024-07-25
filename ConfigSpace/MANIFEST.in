@@ -1,0 +1,5 @@
+include *.md
+recursive-include ConfigSpace *.pyx *.pxd
+include LICENSE
+include pyproject.toml
+include ConfigSpace/py.typed

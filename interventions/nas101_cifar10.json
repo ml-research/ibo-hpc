@@ -1,0 +1,50 @@
+[
+    {
+        "type": "bad",
+        "intervention": [0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 0, 1],
+        "iteration": 5
+    },
+    {
+        "type": "good",
+        "intervention": [1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1],
+        "iteration": 5
+    },
+    {
+        "type": "good",
+        "intervention": [1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1],
+        "iteration": 15
+    },
+    {
+        "type": "good",
+        "intervention": null,
+        "iteration": 20
+    },
+    {
+        "type": "good",
+        "kind": "dist",
+        "intervention": {
+            "e_0_1": {"dist": "cat", "parameters": [1, 1e4]}, 
+            "e_0_2": {"dist": "cat", "parameters": [1e4, 1]}, 
+            "e_0_3": {"dist": "cat", "parameters": [1, 1e4]}, 
+            "e_0_4": {"dist": "cat", "parameters": [1e4, 1]}, 
+            "e_0_5": {"dist": "cat", "parameters": [1, 1e4]}, 
+            "e_0_6": {"dist": "cat", "parameters": [1, 1e4]}, 
+            "e_1_2": {"dist": "cat", "parameters": [1, 1e4]},
+            "e_1_3": {"dist": "cat", "parameters": [1e4, 1]}, 
+            "e_1_4": {"dist": "cat", "parameters": [1e4, 1]},
+            "e_1_5": {"dist": "cat", "parameters": [1e4, 1]}, 
+            "e_1_6": {"dist": "cat", "parameters": [1e4, 1]},
+            "e_2_3": {"dist": "cat", "parameters": [1e4, 1]}, 
+            "e_2_4": {"dist": "cat", "parameters": [1, 1e4]}, 
+            "e_2_5": {"dist": "cat", "parameters": [1e4, 1]}, 
+            "e_2_6": {"dist": "cat", "parameters": [1e4, 1]}, 
+            "e_3_4": {"dist": "cat", "parameters": [1e4, 1]}, 
+            "e_3_5": {"dist": "cat", "parameters": [1, 1e4]}, 
+            "e_3_6": {"dist": "cat", "parameters": [1e4, 1]}, 
+            "e_4_5": {"dist": "cat", "parameters": [1, 1e4]}, 
+            "e_4_6": {"dist": "cat", "parameters": [1e4, 1]}, 
+            "e_5_6": {"dist": "cat", "parameters": [1, 1e4]}
+        },
+        "iteration": 5
+    }
+]
