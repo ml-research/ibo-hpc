@@ -53,3 +53,18 @@ If the automatic setup of the dataset fails, try to manually run the following c
 `gdown 1KSjP3-5x1O0_2-DuQJgcXG3_h_AiYh0j --folder -O /app/data/`
 
 If it does not succeed, try to download the contents of the Google Drive directory with the given ID (`1KSjP3-5x1O0_2-DuQJgcXG3_h_AiYh0j`) manually one by one and place it in the `/app/data/` directory.
+
+## Citation
+If you find this code useful in your research, please consider citing:
+
+
+    @incollection{seng2024tpm,
+      title = {Hyperparameter Optimization via Interacting with Probabilistic Circuits},
+      author = {Seng, Jonas and Ventola, Fabrizio and Yu, Zhongjie and Kersting, Kristian},
+      booktitle = {7th Workshop on Tractable Probabilistic Modeling at UAI (TPM 2024)},
+      year = {2024}
+    }
+
+
+## Acknowledgments
+This work was supported by the National High-Performance Computing Project for Computational Engineering Sciences (NHR4CES) and the Federal Ministry of Education and Research (BMBF) Competence Center for AI and Labour ("KompAKI", FKZ 02L19C150). Furthermore, this work benefited from the cluster project "The Third Wave of AI".
