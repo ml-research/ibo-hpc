@@ -1,5 +1,5 @@
 # Hyperparameter Optimization via Interacting with Probabilistic Circuits
-This repository contains the code of `Hyperparameter Optimization via Interacting with Probabilistic Circuits`.
+This repository contains the code of the paper titled `Hyperparameter Optimization via Interacting with Probabilistic Circuits`.
 
 ## Abstract
 Despite the growing interest in designing truly interactive hyperparameter optimization (HPO) methods, only a few allow human feedback to be included. However, these methods add friction to the interactive process, rigidly requiring users to define prior distributions ex ante and often imposing additional constraints on the optimization framework. This hinders flexible incorporation of expertise and valuable knowledge of domain experts, who might provide partial feedback at any time during optimization. To overcome these limitations, we introduce a novel Bayesian optimization approach leveraging probabilistic circuits (PCs) as a surrogate model. PCs encode a tractable joint distribution over the hybrid hyperparameter space and evaluation scores. They enable tractable and exact conditional inference and sampling, allowing users to provide beliefs interactively and generate configurations adhering to their feedback. We demonstrate the benefits of the resulting interactive HPO through an extensive empirical evaluation of diverse benchmarks, including the challenging setting of neural architecture search.
@@ -60,7 +60,7 @@ If you find this code useful in your research, please consider citing:
 
     @incollection{seng2024tpm,
       title = {Hyperparameter Optimization via Interacting with Probabilistic Circuits},
-      author = {Seng, Jonas and Ventola, Fabrizio and Yu, Zhongjie and Kersting, Kristian},
+      author = {Jonas Seng and Fabrizio Ventola and Zhongjie Yu and Kristian Kersting},
       booktitle = {7th Workshop on Tractable Probabilistic Modeling at UAI (TPM 2024)},
       year = {2024}
     }
