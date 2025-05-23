@@ -7,6 +7,7 @@ from ConfigSpace.hyperparameters import CategoricalHyperparameter
 import numpy as np
 from copy import deepcopy
 from syne_tune.config_space import Categorical
+from skopt.space import Categorical as CategoricalSkopt
 
 class NAS101SearchSpace(NASLibSearchSpace):
 
@@ -28,17 +29,7 @@ class NAS101SearchSpace(NASLibSearchSpace):
             new_bench.sample_random_architecture(dataset_api=self.dataset_api)
             sample = self.to_dict(new_bench)
             samples.append(sample)
-        if keep_domain:
-            return samples
-        processed_configs = []
-        for sample in samples:
-            processed_config = deepcopy(sample)
-            for name, val in sample.items():
-                if name.startswith('o'):
-                    idx = self.search_space_definition[name]['allowed'].index(val)
-                    processed_config[name] = idx
-            processed_configs.append(processed_config)
-        return processed_configs
+        return samples
 
 
     def get_search_space_definition(self):
@@ -49,13 +40,15 @@ class NAS101SearchSpace(NASLibSearchSpace):
         for i, j in triu_ind:
             search_space_repr[f'e_{i}_{j}'] = {
                 'type': MetaType.BINARY,
-                'allowed': [0, 1]
+                'allowed': [0, 1],
+                'dtype': 'int'
             }
         # add parameters for operation choice
         for i in range(1, num_vertices - 1):
             search_space_repr[f'o_{i}'] = {
                 'type': MetaType.DISCRETE,
-                'allowed': self.operations
+                'allowed': self.operations,
+                'dtype': 'str'
             }
     
         return search_space_repr
@@ -107,6 +100,15 @@ class NAS101SearchSpace(NASLibSearchSpace):
             config_space[f'o_{i}'] = hp
     
         return config_space
+    
+    def to_skopt(self):
+        hp_def = self.to_configspace()
+        space = []
+        for hp_name in hp_def.get_all_unconditional_hyperparameters():
+            hp = hp_def.get_hyperparameter(hp_name)
+            skopt_hp = CategoricalSkopt(hp.choices, name=hp.name)
+            space.append(skopt_hp)
+        return space
     
     def to_dict(self, benchmark: NasBench101SearchSpace):
         arch_descr = benchmark.get_spec()

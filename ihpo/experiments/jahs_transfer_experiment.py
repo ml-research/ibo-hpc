@@ -1,102 +1,187 @@
-from .experiment import BenchmarkExperiment
+from .experiment import TransferBenchmarkExperiment
 from ..benchmarks import BenchmarkFactory
 from ..optimizers import OptimizerFactory
-from copy import deepcopy
+from ..consts import JAHS_TASKS
+import os
+import numpy as np
 
-class JAHSBenchExperiment(BenchmarkExperiment):
+# TODO: Use TransferBenchmarkExperiment base class for more detailed logs!
+class JAHSBenchTransferExperiment(TransferBenchmarkExperiment):
 
-    def __init__(self, optimizer_name, task1='cifar10', task2='colorectal_histology') -> None:
+    def __init__(self, optimizer_name, prior_tasks, target_task, seed=0, 
+                 num_pior_runs_per_task=1, prior_task_log='./data/',
+                 is_heterogeneous=False) -> None:
         self.benchmark_name = 'jahs'
-        self.benchmark_config1 = {
-            'task': task1
-        }
-        self.benchmark_config2 = {
-            'task': task2
+        self.prior_tasks = prior_tasks
+        if len(self.prior_tasks) == 1 and self.prior_tasks[0] == '*':
+            self.prior_tasks = [t for t in JAHS_TASKS if t != target_task]
+        self.target_task = target_task
+        self._num_prior_runs_per_task = num_pior_runs_per_task
+        self._prior_task_log = prior_task_log
+        self._seed = seed
+        self._is_heterogeneous = is_heterogeneous
+        self.benchmark_target_task = {
+            'task': target_task
         }
         benchmark = BenchmarkFactory.get_benchmark(self.benchmark_name, 
-                                                        self.benchmark_config1)
+                                                        self.benchmark_target_task)
 
         self._optimizer_name = optimizer_name
         self.optimizer_config = self.get_optimizer_config(benchmark)
         optimizer = OptimizerFactory.get_optimizer(optimizer_name, self.optimizer_config)   
-        super().__init__(benchmark, optimizer)     
+        super().__init__(benchmark, optimizer, prior_task_log)
 
     def run(self):
-        # run on first task
-        config, performance = self.optimizer.optimize()
-        self.benchmark = BenchmarkFactory.get_benchmark(self.benchmark_name, 
-                                                        self.benchmark_config2)
-        # TODO: adapt search space (we need second search space definition)
-        self.optimizer.adapt_to_search_space()
+        if self._optimizer_name in ['pc_transfer', 'pc_transfer_rf']:
+            config, performance = self.continual_optimization()
         # perform optimization on second search space
-        config, performance = self.optimizer.optimize()
-        if self._optimizer_name == 'pc':
-            processed_config = {}
-            for name, idx in config.items():
-                param_def = self.benchmark.search_space.search_space_definition[name]
-                if 'allowed' in list(param_def.keys()):
-                    processed_config[name] = param_def['allowed'][int(idx)]
-                else:
-                    processed_config[name] = idx
-            config = processed_config
+        else:
+            config, performance = self.optimizer.optimize()
+            self.histories[self.target_task] = self.optimizer.history
         print((config, performance))
 
-    def evaluate_config(self, cfg, budget=None):
-        test_cfg = cfg
-        if self._optimizer_name == 'pc':
-            to_be_transformed = ['Activation', 'Op1', 'Op2', 'Op3', 'Op4', 'Op5', 'Op6', 'TrivialAugment']
-            search_space_def = self.benchmark.search_space.get_search_space_definition()
-            cfg_copy = deepcopy(cfg)
-            for key, val in cfg.items():
-                if key in to_be_transformed:
-                    cfg_copy[key] = search_space_def[key]['allowed'][int(val)]
-            test_cfg = cfg_copy
-        if self.benchmark is not None:
-            # fix fidelities
-            test_cfg['Optimizer'] = 'SGD'
-            test_cfg['W'] = 16
-            test_cfg['N'] = 5
-            test_cfg['Resolution'] = 1.0
-            res = self.benchmark.query(test_cfg, budget)
-            return res
+    def continual_optimization(self):
+        """
+            Perform continual HPO. Only supported by HyTraLVIP
+        """
+        tasks = self.prior_tasks + [self.target_task]
+        for pt in tasks:
+            benchmark_cfg = {
+                'task': pt
+            }
+            benchmark = BenchmarkFactory.get_benchmark(self.benchmark_name, 
+                                                    benchmark_cfg)
+            evaluate_fun = self.create_evaluate_config(benchmark)
+            self.optimizer.objective = evaluate_fun
+            self.optimizer.set_search_space(benchmark.search_space)
+            config, performance = self.optimizer.optimize()
+            self.histories[pt] = self.optimizer.history
+
+        return config, performance
+
+    def create_evaluate_config(self, benchmark):
+
+        def evaluate_config(cfg, budget=None):
+            if benchmark is not None:
+                # fix fidelities
+                cfg['Optimizer'] = 'SGD'
+                res = benchmark.query(cfg, budget)
+                return res
+        
+        return evaluate_config
         
     def get_optimizer_config(self, benchmark):
         assert benchmark is not None, 'Something went wrong instantiating the benchmark'
         if self._optimizer_name == 'smac':
             return {
-                'objective': self.evaluate_config,
+                'objective': self.create_evaluate_config(benchmark),
                 'search_space': benchmark.search_space,
                 'n_trials': 100,
                 'num_iter': 2000
             }
-        elif self._optimizer_name == 'hyperband':
+        elif self._optimizer_name == 'quant':
             return {
-                'objective': self.evaluate_config,
+                'objective': self.create_evaluate_config(benchmark),
                 'search_space': benchmark.search_space,
-                'min_budget': 1,
-                'max_budget': 100,
-                'n_trials': 100
+                'transfer_learning_evaluation_files': self.get_prior_runs(),
+                'max_trials': 2000,
             }
-        elif self._optimizer_name == 'pc': 
+        elif self._optimizer_name == 'bbox':
             return {
-                'objective': self.evaluate_config,
+                'objective': self.create_evaluate_config(benchmark),
                 'search_space': benchmark.search_space,
-                'iterations': 100,
-                'samples_per_iter': 20,
-                'use_eic': False,
-                'eic_samplings': 20
+                'transfer_learning_evaluation_files': self.get_prior_runs(),
+                'max_trials': 2000,
+                'num_hyperparameters_per_task': 10,
+            }
+        elif self._optimizer_name == 'pc_transfer': 
+            return {
+                'objective': self.create_evaluate_config(benchmark),
+                'search_space': benchmark.search_space,
+                'iterations': 10,
+                'num_samples': 5,
+                'initial_samples': 10,
+                'num_self_consistency_samplings': 50,
+                'max_rel_ball_size': 0,
+                'seed': self._seed
             }
         elif self._optimizer_name == 'rs':
             return {
-                'objective': self.evaluate_config,
+                'objective': self.create_evaluate_config(benchmark),
                 'search_space': benchmark.search_space,
                 'iterations': 2000,
             }
         elif self._optimizer_name == 'ls':
             return {
-                'objective': self.evaluate_config,
+                'objective': self.create_evaluate_config(benchmark),
                 'search_space': benchmark.search_space,
                 'runs': 150
             }
+        elif self._optimizer_name == 'transbo':
+            return {
+                'objective': self.create_evaluate_config(benchmark),
+                'search_space': benchmark.search_space,
+                'max_iter': 500,
+                'method': 'tlbo_topov3_prf',
+                'transfer_learning_evaluation_files': self.get_prior_runs()
+            }
+        elif self._optimizer_name == 'rgpe':
+            return {
+                'objective': self.create_evaluate_config(benchmark),
+                'search_space': benchmark.search_space,
+                'max_iter': 500,
+                'method': 'tlbo_rgpe_prf',
+                'transfer_learning_evaluation_files': self.get_prior_runs()
+            }
+        elif self._optimizer_name == '0shot':
+            return {
+                'objective': self.create_evaluate_config(benchmark),
+                'search_space': benchmark.search_space,
+                'max_trials': 2000,
+                'transfer_learning_evaluation_files': self.get_prior_runs()
+            }
+        elif self._optimizer_name == 'mphd':
+            return {
+                'objective': self.create_evaluate_config(benchmark),
+                'search_space': benchmark.search_space,
+                'transfer_learning_evaluation_files': self.get_prior_runs(),
+                'y_transform': lambda x: x/100,
+                'iters': 100,
+                'gpu': -1
+            }
+        elif self._optimizer_name == 'fsbo':
+            return {
+                'objective': self.create_evaluate_config(benchmark),
+                'search_space': benchmark.search_space,
+                'transfer_learning_evaluation_files': self.get_prior_runs(),
+                'iters': 100,
+                'gpu': -1 
+            }
+        elif self._optimizer_name == 'pc_transfer_rf': 
+            return {
+                'objective': self.create_evaluate_config(benchmark),
+                'search_space': benchmark.search_space,
+                'iterations': 2000,
+                'warm_start_samples': 1e4,
+                'seed': self._seed
+            }
         else:
             raise ValueError(f'No such optimizer: {self._optimizer_name}')
+        
+    def get_prior_runs(self):
+        if self._is_heterogeneous:
+            return self.load_imputed_prior_hpo_runs()
+        else:
+            return self.load_prior_hpo_logs()
+        
+    def load_prior_hpo_logs(self):
+        task_files = {}
+
+        for task in self.prior_tasks:
+            path = os.path.join(self._prior_task_log, f'htl-prior-{self.benchmark_name}-{task}/')
+            files = list(os.listdir(path))
+            fidx = np.random.randint(0, len(files), size=self._num_prior_runs_per_task)
+            selected_files = [path + files[int(idx)] for idx in fidx]
+            task_files[task] = selected_files
+
+        return task_files

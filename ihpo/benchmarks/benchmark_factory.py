@@ -21,5 +21,13 @@ class BenchmarkFactory:
             return JAHSBenchmark(**benchmark_cfg)
         elif name == 'transnas':
             return TransNASBench(**benchmark_cfg)
+        elif name == 'hpob':
+            return HPOBBenchmark(**benchmark_cfg)
+        elif name == 'fcnet':
+            return FCNetBenchmark(**benchmark_cfg)
+        elif name == 'pd1':
+            return PD1Benchmark(**benchmark_cfg)
+        elif name == 'lcbench':
+            return LCBenchmark(**benchmark_cfg)
         else:
             raise ValueError(f'Benchmark {name} not known.')

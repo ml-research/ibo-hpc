@@ -9,7 +9,8 @@
      This should give us the most important hyperparameters and their corresponding value.
 """
 
-from ihpo.benchmarks import HPOTabularBenchmark, NAS101Benchmark, NAS201Benchmark, JAHSBenchmark, TransNASBench, BenchQueryResult
+from ihpo.benchmarks import HPOTabularBenchmark, NAS101Benchmark, NAS201Benchmark, JAHSBenchmark, TransNASBench, HPOBBenchmark, \
+      PD1Benchmark, LCBenchmark, FCNetBenchmark, BenchQueryResult
 import argparse
 import pandas as pd 
 import numpy as np
@@ -94,6 +95,8 @@ def get_benchmark(args):
     benchmark = args.benchmark
     if benchmark == 'hpo':
         return HPOTabularBenchmark('xgb', 167120)
+    elif benchmark == 'hpob':
+        return HPOBBenchmark('./benchmark_data/hpob-data/', './benchmark_data/hpob-surrogates/', '6794', '9914')
     elif benchmark == 'nas101':
         return NAS101Benchmark(task)
     elif benchmark == 'nas201':
@@ -102,6 +105,12 @@ def get_benchmark(args):
         return JAHSBenchmark(task)
     elif benchmark == 'transnas':
         return TransNASBench(task)
+    elif benchmark == 'pd1':
+        return PD1Benchmark(task)
+    elif benchmark == 'fcnet':
+        return FCNetBenchmark(task)
+    elif benchmark == 'lc':
+        return LCBenchmark(task)
     else:
         raise ValueError('No such benchmark')
 
@@ -121,7 +130,7 @@ benchmark = get_benchmark(args)
 configs = benchmark.search_space.sample(args.samples)
 results = []
 for cfg in configs:
-    cfg['Optimizer'] = 'SGD'
+    #cfg['Optimizer'] = 'SGD'
     res = benchmark.query(cfg)
     results.append(res)
 
@@ -134,6 +143,8 @@ if args.mode == 'entropy_based':
     bad_interventions.to_csv(bad_filename)
 else:
     performances = np.array([res.test_performance for res in results])
+    costs = np.array([res.cost for res in results])
+    epochs = np.array([res.epochs for res in results])
     best_idx, worst_idx = np.argwhere(performances == performances.max()).flatten()[0], np.argwhere(performances == performances.min()).flatten()[0]
     print("====================== RESULTS ===================")
     print(f"Best Performance: {performances[best_idx]}")

@@ -2,10 +2,12 @@ from .experiment import TransferBenchmarkExperiment
 from ..benchmarks import BenchmarkFactory
 from ..optimizers import OptimizerFactory
 from copy import deepcopy
+import os
+import pandas as pd
 
 class NASBench201TransferExperiment(TransferBenchmarkExperiment):
 
-    def __init__(self, optimizer_name, tasks=['cifar10']) -> None:
+    def __init__(self, optimizer_name, tasks=['cifar10'], seed=0) -> None:
         assert len(tasks) > 0, 'Cannot take empty list of tasks'
         print(f"STARTING TRANSFER NAS201 EXPERIMENT WITH TASKS {tasks}")
         self.benchmark_name = 'nas201'
@@ -14,6 +16,7 @@ class NASBench201TransferExperiment(TransferBenchmarkExperiment):
         self.benchmark_config = {
             'task': tasks[0]
         }
+        self._num_history_runs = 10
         benchmark = BenchmarkFactory.get_benchmark(self.benchmark_name, 
                                                         self.benchmark_config)
 
@@ -22,7 +25,7 @@ class NASBench201TransferExperiment(TransferBenchmarkExperiment):
         optimizer = OptimizerFactory.get_optimizer(optimizer_name, self.optimizer_config)
         super().__init__(benchmark, optimizer)
 
-    def _init_next_task(self, task_idx):
+    def _init_next_task_pc(self, task_idx):
         curr_task = self.tasks[task_idx - 1]
         # store logs of current task
         self.histories[curr_task] = deepcopy(self.optimizer.history)
@@ -37,18 +40,34 @@ class NASBench201TransferExperiment(TransferBenchmarkExperiment):
         self.optimizer.set_search_space(search_space)
         
     def run(self):
+        if self._optimizer_name == 'pc':
+            self._run_pc_exp()
+        elif self._optimizer_name == 'bounding_box':
+            pass
+
+    def _run_pc_exp(self):
         for task_idx in range(len(self.tasks)):
             config, performance = self.optimizer.optimize()
-            if self._optimizer_name == 'pc':
-                processed_config = {}
-                for name, idx in config.items():
-                    param_def = self.benchmark.search_space.search_space_definition[name]
-                    processed_config[name] = param_def['allowed'][int(idx)]
-                config = processed_config
+            processed_config = {}
+            for name, idx in config.items():
+                param_def = self.benchmark.search_space.search_space_definition[name]
+                processed_config[name] = param_def['allowed'][int(idx)]
+            config = processed_config
             print((config, performance))
 
             # set next task
-            self._init_next_task(task_idx + 1)
+            self._init_next_task_pc(task_idx + 1)
+
+    def _run_synetune(self):
+        base_path = './data/'
+        dfs = []
+        for task in self.tasks:
+            history_file = os.path.join(base_path, f'nas201_optunabo_{task}')
+            csv_files = list(os.listdir(history_file))
+            for file in csv_files[:self._num_history_runs]:
+                df = pd.read_csv(file, index_col=0)
+
+
 
     def evaluate_config(self, cfg, budget=None):
         test_cfg = cfg

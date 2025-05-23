@@ -1,0 +1,1 @@
+NO_HYPERPARAMETERS = ['train_performance', 'test_performance', 'cost', 'train_loss', 'val_loss', 'test_loss', 'optim_cost', 'task', 'iter', 'epochs']

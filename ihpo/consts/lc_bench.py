@@ -1,0 +1,2 @@
+LC_HYPERPARAMETERS = ['num_layers', 'max_units', 'batch_size', 'learning_rate', 'momentum', 'max_dropout', 'weight_decay']
+LC_EVALUATION_METRICS = ['final_train_balanced_accuracy', 'final_val_balanced_accuracy', 'final_test_balanced_accuracy']

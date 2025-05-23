@@ -2,10 +2,12 @@ from .experiment import BenchmarkExperiment
 from ..benchmarks import BenchmarkFactory
 from ..optimizers import OptimizerFactory
 from copy import deepcopy
+import os
+import json
 
 class JAHSBenchExperiment(BenchmarkExperiment):
 
-    def __init__(self, optimizer_name, task='cifar10') -> None:
+    def __init__(self, optimizer_name, task='cifar10', seed=0) -> None:
         self.benchmark_name = 'jahs'
         self.benchmark_config = {
             'task': task
@@ -14,33 +16,17 @@ class JAHSBenchExperiment(BenchmarkExperiment):
                                                         self.benchmark_config)
 
         self._optimizer_name = optimizer_name
+        self.seed = seed
         self.optimizer_config = self.get_optimizer_config(benchmark)
-        optimizer = OptimizerFactory.get_optimizer(optimizer_name, self.optimizer_config)   
+        optimizer = OptimizerFactory.get_optimizer(optimizer_name, self.optimizer_config)
         super().__init__(benchmark, optimizer)     
 
     def run(self):
         config, performance = self.optimizer.optimize()
-        if self._optimizer_name == 'pc':
-            processed_config = {}
-            for name, idx in config.items():
-                param_def = self.benchmark.search_space.search_space_definition[name]
-                if 'allowed' in list(param_def.keys()):
-                    processed_config[name] = param_def['allowed'][int(idx)]
-                else:
-                    processed_config[name] = idx
-            config = processed_config
         print((config, performance))
 
     def evaluate_config(self, cfg, budget=None):
         test_cfg = deepcopy(cfg)
-        if self._optimizer_name == 'pc':
-            to_be_transformed = ['Activation', 'W', 'N', 'epoch', 'Op1', 'Op2', 'Op3', 'Op4', 'Op5', 'Op6', 'TrivialAugment']
-            search_space_def = self.benchmark.search_space.get_search_space_definition()
-            cfg_copy = deepcopy(cfg)
-            for key, val in cfg.items():
-                if key in to_be_transformed:
-                    cfg_copy[key] = search_space_def[key]['allowed'][int(val)]
-            test_cfg = cfg_copy
         if self.benchmark is not None:
             test_cfg['Optimizer'] = 'SGD'
             if budget is None and 'epoch' in cfg:
@@ -55,7 +41,22 @@ class JAHSBenchExperiment(BenchmarkExperiment):
             return {
                 'objective': self.evaluate_config,
                 'search_space': benchmark.search_space,
+                'n_trials': 2000,
+                'log_hpo_runtime': True,
+                'seed': self.seed
+            }
+        elif self._optimizer_name == 'pibo':
+            return {
+                'objective': self.evaluate_config,
+                'search_space': benchmark.search_space,
                 'n_trials': 2000
+            }
+        elif self._optimizer_name == 'bopro':
+            self.setup_bopro_json(benchmark)
+            return {
+                'objective': self.evaluate_config,
+                'search_space': benchmark.search_space,
+                'exp_json': self._bopro_file_name
             }
         elif self._optimizer_name == 'hyperband':
             return {
@@ -70,9 +71,10 @@ class JAHSBenchExperiment(BenchmarkExperiment):
                 'objective': self.evaluate_config,
                 'search_space': benchmark.search_space,
                 'iterations': 100,
-                'samples_per_iter': 20,
-                'use_eic': False,
-                'eic_samplings': 20,
+                'num_samples': 20,
+                'use_ei': False,
+                'num_ei_repeats': 20,
+                'pc_type': 'quantile'
                 #'conditioning_value_quantile': 0.25
             }
         elif self._optimizer_name == 'rs':
@@ -87,5 +89,44 @@ class JAHSBenchExperiment(BenchmarkExperiment):
                 'search_space': benchmark.search_space,
                 'runs': 150
             }
+        elif self._optimizer_name == 'optunabo':
+            return {
+                'objective': self.evaluate_config,
+                'search_space': benchmark.search_space,
+                'iterations': 2000
+            }
+        elif self._optimizer_name == 'skoptbo':
+            return {
+                'objective': self.evaluate_config,
+                'search_space': benchmark.search_space,
+                'iterations': 2000,
+                'surrogate': 'rf'
+            }
         else:
             raise ValueError(f'No such optimizer: {self._optimizer_name}')
+
+    def setup_bopro_json(self, benchmark):
+        search_space = benchmark.search_space
+        borpo_search_space = search_space.to_hypermapper()
+        json_dict = {
+            "application_name": "JAHS Interactive",
+            "optimization_objectives": ["value"],
+            "design_of_experiment": {
+                "number_of_samples": 3,
+            },
+            "optimization_iterations": 2000,
+            "optimization_method": "prior_guided_optimization",
+            "number_of_cpus": 16,
+            "models": {
+                "model": "random_forest"
+            },
+            "input_parameters": borpo_search_space,
+            "local_search_starting_points": 10,
+            "local_search_random_points": 50,
+            "local_search_evaluation_limit": 200
+        }
+        if not os.path.exists('./bopro_experiments/'):
+            os.mkdir('./bopro_experiments')
+        self._bopro_file_name =  './bopro_experiments/jahs_interactive.json'
+        with open(self._bopro_file_name, 'w+') as f:
+            json.dump(json_dict, f)

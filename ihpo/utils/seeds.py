@@ -1,17 +1,3 @@
-import os
-
-def setup_environment():
-    # set symlink for NASLib data
-    data_abs_dir = os.path.abspath('./data/')
-    if not os.path.exists('/usr/local/lib/python3.9/site-packages/naslib/data'):
-        os.system(f'ln -s {data_abs_dir} /usr/local/lib/python3.9/site-packages/naslib/data')
-
-    if not os.path.exists(os.path.join(data_abs_dir, 'assembled_surrogates/')):
-        os.system(f'gdown 1KSjP3-5x1O0_2-DuQJgcXG3_h_AiYh0j --folder -O {data_abs_dir}')
-
-def create_dir(dir):
-    if not os.path.exists(dir):
-        os.makedirs(dir)
 
 SEEDS = [4292,
             4502,

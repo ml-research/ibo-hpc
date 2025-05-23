@@ -7,6 +7,9 @@ from ConfigSpace import ConfigurationSpace
 from ConfigSpace.hyperparameters import CategoricalHyperparameter, \
     UniformFloatHyperparameter, UniformIntegerHyperparameter
 from syne_tune.config_space import Float, Categorical
+from skopt.space import Real as RealSkopt
+from skopt.space import Integer as IntegerSkopt 
+from skopt.space import Categorical as CategoricalSkopt
 
 class JAHSBenchSearchSpace(SearchSpace):
 
@@ -57,19 +60,7 @@ class JAHSBenchSearchSpace(SearchSpace):
             samples = [config_space.sample_configuration().get_dictionary() for _ in range(size)]
             #samples = [self.benchmark.sample_config() for _ in range(size)]
         
-        if keep_domain:
-            return samples
-        processed_configs = []
-        to_be_transformed = ['Activation', 'W', 'N', 'epoch', 'Op1', 'Op2', 'Op3', 'Op4', 'Op5', 'Op6', 'TrivialAugment']
-        #to_be_transformed = ['Activation', 'W', 'N', 'epoch', 'Op1', 'Op2', 'Op3', 'Op4', 'Op5', 'Op6', 'TrivialAugment', 'Resolution']
-        for sample in samples:
-            processed_config = deepcopy(sample)
-            for name, val in sample.items():
-                if name in to_be_transformed:
-                    idx = self.search_space_definition[name]['allowed'].index(val)
-                    processed_config[name] = idx
-            processed_configs.append(processed_config)
-        return processed_configs
+        return samples
     
     def get_neighbors(self, config: dict, num_cont_neighbors=6):
         if config is None:
@@ -124,8 +115,8 @@ class JAHSBenchSearchSpace(SearchSpace):
         config_space = ConfigurationSpace()
         for key, val in self.config_space.items():
             if key not in exclude_from_config_space:
-                #if key in ['LearningRate', 'WeightDecay', 'Resolution']:
-                if key in ['LearningRate', 'WeightDecay']:
+                if key in ['LearningRate', 'WeightDecay', 'Resolution']:
+                #if key in ['LearningRate', 'WeightDecay']:
                     hp = UniformFloatHyperparameter(key, val[0], val[1])
                 elif key == 'epoch':
                     hp = UniformIntegerHyperparameter(key, val[0], val[-1], default_value=val[-1])
@@ -133,6 +124,7 @@ class JAHSBenchSearchSpace(SearchSpace):
                     hp = CategoricalHyperparameter(key, val)
 
                 config_space.add_hyperparameter(hp)
+        
         return config_space
     
     def to_synetune(self):
@@ -145,7 +137,6 @@ class JAHSBenchSearchSpace(SearchSpace):
                 else:
                     hp = Categorical(val)
                     config_space[key] = hp
-                    
         return config_space
     
     def to_hypermapper(self):
@@ -175,6 +166,23 @@ class JAHSBenchSearchSpace(SearchSpace):
             config_space[key] = hp
         return config_space
     
+    def to_skopt(self, all_numeric=True):
+        hp_def = self.to_configspace()
+        space = []
+        for hp_name in hp_def.get_all_unconditional_hyperparameters():
+            hp = hp_def.get_hyperparameter(hp_name)
+            if isinstance(hp, CategoricalHyperparameter):
+                choices = list(range(len(hp.choices))) if all_numeric else hp.choices
+                skopt_hp = CategoricalSkopt(choices, name=hp.name)
+                space.append(skopt_hp)
+            elif isinstance(hp, UniformFloatHyperparameter):
+                skopt_hp = RealSkopt(hp.lower, hp.upper, name=hp.name)
+                space.append(skopt_hp)
+            elif isinstance(hp, UniformIntegerHyperparameter):
+                skopt_hp = IntegerSkopt(hp.lower, hp.upper, name=hp.name)
+                space.append(skopt_hp)
+        return space
+    
     def is_valid(self, config):
         return True
     
@@ -185,40 +193,64 @@ class JAHSBenchSearchSpace(SearchSpace):
             'Activation': {
                 'type': MetaType.DISCRETE,
                 'allowed': self.config_space['Activation'],
+                'dtype': 'str',
+                'is_log': False,
             },
             'LearningRate': {
                 'type': MetaType.REAL,
+                'min': 1e-3,
+                'max': 1.0,
+                'dtype': 'float',
+                'is_log': False,
             },
             'N': {
                 'type': MetaType.DISCRETE,
-                'allowed': self.config_space['N']
+                'allowed': self.config_space['N'],
+                'dtype': 'int',
+                'is_log': False,
             },
             'Op1': {
                 'type': MetaType.DISCRETE,
-                'allowed': self.config_space['Op1']
+                'allowed': self.config_space['Op1'],
+                'dtype': 'int',
+                'is_log': False,
             },
             'Op2': {
                 'type': MetaType.DISCRETE,
-                'allowed': self.config_space['Op2']
+                'allowed': self.config_space['Op2'],
+                'dtype': 'int',
+                'is_log': False,
             },
             'Op3': {
                 'type': MetaType.DISCRETE,
-                'allowed': self.config_space['Op3']
+                'allowed': self.config_space['Op3'],
+                'dtype': 'int',
+                'is_log': False,
             },
             'Op4': {
                 'type': MetaType.DISCRETE,
-                'allowed': self.config_space['Op4']
+                'allowed': self.config_space['Op4'],
+                'dtype': 'int',
+                'is_log': False,
             },
             'Op5': {
                 'type': MetaType.DISCRETE,
-                'allowed': self.config_space['Op5']
+                'allowed': self.config_space['Op5'],
+                'dtype': 'int',
+                'is_log': False,
             },
             'Op6': {
                 'type': MetaType.DISCRETE,
-                'allowed': self.config_space['Op6']
+                'allowed': self.config_space['Op6'],
+                'dtype': 'int',
+                'is_log': False,
             },
             'Resolution': {
-                'type': MetaType.REAL
+                'type': MetaType.REAL,
+                'min': 0.0,
+                'max': 1.0,
+                'dtype': 'float',
+                'is_log': False,
             },
             #'Resolution': {
             #    'type': MetaType.DISCRETE,
@@ -226,18 +258,27 @@ class JAHSBenchSearchSpace(SearchSpace):
             #},
             'TrivialAugment': {
                 'type': MetaType.BINARY,
-                'allowed': self.config_space['TrivialAugment']
+                'allowed': self.config_space['TrivialAugment'],
+                'dtype': 'bool'
             },
             'W': {
                 'type': MetaType.DISCRETE,
-                'allowed': self.config_space['W']
+                'allowed': self.config_space['W'],
+                'dtype': 'int',
+                'is_log': False,
             },
             'WeightDecay': {
                 'type': MetaType.REAL,
+                'min': 1e-5,
+                'max': 1e-2,
+                'dtype': 'float',
+                'is_log': False,
             },
             'epoch': {
                 'type': MetaType.DISCRETE,
-                'allowed': self.config_space['epoch']
+                'allowed': self.config_space['epoch'],
+                'dtype': 'int',
+                'is_log': False,
             }
         }
         return search_space_definition

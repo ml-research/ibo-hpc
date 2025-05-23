@@ -2,7 +2,7 @@
     {
         "type": "good",
         "intervention": {"Op_0": 2, "Op_1": 2, "Op_2": 0},
-        "iteration": 15
+        "iteration": 5
     },
     {
         "type": "good",
@@ -15,7 +15,6 @@
         "iteration": 5
     },
     {
-    
         "type": "good",
         "intervention": null,
         "iteration": 20
@@ -27,5 +26,53 @@
                          "Op_1": {"dist": "cat", "parameters": [1, 1, 1e4, 1, 1]},
                          "Op_2": {"dist": "cat", "parameters": [1e4, 1, 1, 1, 1]}},
         "iteration": 5
+    },
+    {
+        "type": "good",
+        "kind": "dist",
+        "intervention": {"Op_0": {"dist": "cat", "parameters": [1, 1, 5, 1, 1]},
+                         "Op_1": {"dist": "cat", "parameters": [1, 1, 5, 1, 1]},
+                         "Op_2": {"dist": "cat", "parameters": [5, 1, 1, 1, 1]}},
+        "iteration": 5
+    },
+
+    {
+        "type": "bad",
+        "kind": "dist",
+        "intervention": {"Op_0": {"dist": "cat", "parameters": [1, 1e4, 1, 1, 1]},
+                         "Op_1": {"dist": "cat", "parameters": [1, 1, 1e4, 1, 1]},
+                         "Op_2": {"dist": "cat", "parameters": [1, 1e4, 1, 1, 1]}},
+        "iteration": 5
+    },
+
+    {
+        "type": "bad",
+        "intervention": {"Op_0": 1, "Op_1": 2, "Op_2": 1},
+        "iteration": 5
+    },
+    {
+        "type": "good",
+        "intervention": {"Op_0": 2, "Op_1": 2, "Op_2": 0},
+        "iteration": 20
+    },
+    {
+        "type": "bad",
+        "intervention": {"Op_0": 1, "Op_1": 2, "Op_2": 1},
+        "iteration": 35
+    },
+    {
+        "type": "good",
+        "intervention": {"Op_0": 2, "Op_1": 2, "Op_2": 0},
+        "iteration": 50
+    },
+    {
+        "type": "bad",
+        "intervention": {"Op_0": 1, "Op_1": 2, "Op_2": 1},
+        "iteration": 65
+    },
+    {
+        "type": "good",
+        "intervention": {"Op_0": 2, "Op_1": 2, "Op_2": 0},
+        "iteration": 80
     }
 ]

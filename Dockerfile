@@ -14,7 +14,7 @@ COPY ./ConfigSpace/ /app/ConfigSpace/
 
 RUN echo
 
-RUN apt-get update && apt-get install -y tmux && apt-get install -y git && apt-get install -y build-essential && apt-get install -y liblapack-dev && apt-get install -y gfortran && apt-get install -y tk && apt-get install -y numactl && apt-get install -y coreutils
+RUN apt-get update && apt-get install -y tmux && apt-get install -y git && apt-get install -y build-essential && apt-get install -y liblapack-dev && apt-get install -y gfortran && apt-get install -y tk && apt-get install -y numactl && apt-get install -y coreutils && apt-get install -y wget && apt-get install unzip
 RUN pip install build
 
 RUN git clone https://github.com/SPFlow/SPFlow.git
@@ -33,7 +33,7 @@ RUN pip install -r requirements.txt
 
 # remove ConfigSpace if installed
 RUN pip uninstall -y ConfigSpace
-RUN cd ./ConfigSpace && python -m build && pip install dist/ConfigSpace-0.7.1-cp39-cp39-linux_x86_64.whl 
+RUN cd ./ConfigSpace && python -m build && pip install dist/configspace-0.7.1-cp39-cp39-linux_x86_64.whl 
 RUN chmod +x /app/setup.sh
 
 CMD ["/app/setup.sh"]

@@ -5,7 +5,7 @@ import pandas as pd
 
 class HPOExperiment(BenchmarkExperiment):
 
-    def __init__(self, optimizer_name, task=167120) -> None:
+    def __init__(self, optimizer_name, task=167120, seed=0) -> None:
         self.benchmark_config = {
             'model': 'xgb',
             'task_id': int(task)

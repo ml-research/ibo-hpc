@@ -4,4 +4,8 @@ from .nas_bench_101 import *
 from .nas_bench_201 import *
 from .trans_nas_bench import *
 from .jahs_bench import *
+from .hpob_bench import HPOBBenchmark
+from .fcnet_benchmark import FCNetBenchmark
+from .lc_bench import LCBenchmark
+from .pd1_benchmark import PD1Benchmark
 from .benchmark_factory import BenchmarkFactory

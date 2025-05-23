@@ -5,7 +5,9 @@ from smac.acquisition.function import PriorAcquisitionFunction, EI
 from ConfigSpace import Configuration, ConfigurationSpace
 from ..benchmarks import BenchQueryResult
 from ..search_spaces import SearchSpace
-from smac.runhistory.dataclasses import TrialValue
+from ..utils.smac import SafeLocalAndSrotedRandomSearch
+from smac.main.config_selector import ConfigSelector
+from smac.runhistory.dataclasses import TrialValue, TrialInfo
 
 class PiBOptimizer(Optimizer):
 
@@ -21,26 +23,38 @@ class PiBOptimizer(Optimizer):
         self._init_smac_objects()
 
     def _init_smac_objects(self):
+        maximizer = SafeLocalAndSrotedRandomSearch(
+            self.search_space,
+            challengers=10000,
+            local_search_iterations=20,
+            n_steps_plateau_walk=20,
+            seed=self._scenario_args['seed']
+        )
         intensifier = HyperparameterOptimizationFacade.get_intensifier(
             self.scenario,
-            max_config_calls=1,
+            max_config_calls=3,
         )
         self.acquisition = PriorAcquisitionFunction(
             HyperparameterOptimizationFacade.get_acquisition_function(self.scenario),
-            self.scenario.n_trials / 10
+            self._num_iter / 10
         )
+        cfg_selector_retries=16
         self.smac = HyperparameterOptimizationFacade(
             self.scenario,
             self._objective_wrapper,
             intensifier=intensifier,
             acquisition_function=self.acquisition,
-            overwrite=True
+            acquisition_maximizer=maximizer,
+            overwrite=True,
+            config_selector=ConfigSelector(
+                self.scenario, retries=cfg_selector_retries
+            )
         )
 
     def _objective_wrapper(self, config: Configuration, 
                            seed: int = 0) -> float:
         res: BenchQueryResult = self.objective(config)
-        return res.val_performance
+        return -res.val_performance
     
     def optimize(self):
         """
@@ -50,7 +64,7 @@ class PiBOptimizer(Optimizer):
         for i in range(self._num_iter):
             if i % 50 == 0:
                 print(f"Iteration {i}/{self._num_iter}")
-                print(self.history)
+                #print(self.history)
             try:
                 info = self.smac.ask()
 
@@ -59,7 +73,7 @@ class PiBOptimizer(Optimizer):
                     # despite safe maximizers SMAC still sometimes suggests invalid
                     # configurations...
                     res: BenchQueryResult = self.objective(info.config.get_dictionary())
-                    value = TrialValue(res.val_performance, time=0.5)
+                    value = TrialValue(-res.val_performance, time=0.5)
 
                     evaluations.append(res)
                     configs.append(info.config.get_dictionary())
@@ -67,10 +81,17 @@ class PiBOptimizer(Optimizer):
 
                     self.smac.tell(info, value)
             except StopIteration:
-                # if this exception is thrown, SMAC is not able to find better config.
-                # add last config to fill until self._num_iter (for visualization purposes)
-                last_entry = self.hist[-1]
-                self.hist.append(last_entry)
+                # add random configuration if PiBO fails
+                cfg = self.search_space.to_configspace().sample_configuration()
+                res = self.objective(cfg.get_dictionary())
+                evaluations.append(res)
+                configs.append(cfg.get_dictionary())
+                self.hist.append((cfg.get_dictionary(), res, i))
+                value = TrialValue(-res.val_performance, time=0.5)
+                info = TrialInfo(cfg)
+                self.smac.tell(info, value)
+                #last_entry = self.hist[-1]
+                #self.hist.append(last_entry)
 
         val_accs = [res.val_performance for res in evaluations]
         best = max(val_accs)

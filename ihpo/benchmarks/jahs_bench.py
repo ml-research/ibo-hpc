@@ -5,7 +5,7 @@ from ..search_spaces import JAHSBenchSearchSpace
 
 class JAHSBenchmark(BaseBenchmark):
 
-    def __init__(self, task, save_dir='./data/') -> None:
+    def __init__(self, task, save_dir='./benchmark_data/') -> None:
         super().__init__()
         self.benchmark = Benchmark(
             task=task,
@@ -16,6 +16,9 @@ class JAHSBenchmark(BaseBenchmark):
             )
         self._EPOCHS = 200 # highest fidelity
         self._search_space = JAHSBenchSearchSpace(self.benchmark)
+
+    def get_min_and_max(self):
+        return 0, 100
         
     def query(self, cfg: Dict, budget=None):
         epochs = self._EPOCHS if budget is None else int(round(budget))

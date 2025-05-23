@@ -1,0 +1,24 @@
+[
+    {
+        "type": "good",
+        "kind": "dist",
+        "intervention": {
+            "activation_fn_1": {"dist": "cat", "parameters": [100, 1], "values": ["relu", "tanh"]},
+            "activation_fn_2": {"dist": "cat", "parameters": [1, 100], "values": ["relu", "tanh"]},
+            "n_units_1": {"dist": "cat", "parameters": [1, 1, 1, 1, 1, 100], "values": [16, 32, 64, 128, 256, 512]},
+            "n_units_2": {"dist": "cat", "parameters": [1, 1, 1, 1, 1, 100], "values": [16, 32, 64, 128, 256, 512]}
+        },
+        "iteration": 5
+    },
+    {
+        "type": "good",
+        "kind": "dist",
+        "intervention": {
+            "activation_fn_1": "relu",
+            "activation_fn_2": "tanh",
+            "n_units_1": 512,
+            "n_units_2": 512
+        },
+        "iteration": 5
+    }
+]

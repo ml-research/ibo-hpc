@@ -5,7 +5,7 @@ import json
 
 class TransNASInteractiveBenchExperiment(BenchmarkExperiment):
 
-    def __init__(self, optimizer_name, interaction_idx, task='cifar10') -> None:
+    def __init__(self, optimizer_name, interaction_idx, task='cifar10', seed=0) -> None:
         self.benchmark_name = 'transnas'
         self.benchmark_config = {
             'task': task
@@ -28,12 +28,6 @@ class TransNASInteractiveBenchExperiment(BenchmarkExperiment):
             intervention = self.get_pibo_intervention()
             self.optimizer.intervene(intervention)
         config, performance = self.optimizer.optimize()
-        if self._optimizer_name == 'pc':
-            processed_config = {}
-            for name, idx in config.items():
-                param_def = self.benchmark.search_space.search_space_definition[name]
-                processed_config[name] = param_def['allowed'][int(idx)]
-            config = processed_config
         print((config, performance))
 
     def evaluate_config(self, cfg, budget=None):

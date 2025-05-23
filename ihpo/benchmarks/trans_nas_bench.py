@@ -13,8 +13,13 @@ class TransNASBench(BaseBenchmark):
         self.task = task
         self.save_dir = save_dir
         self.dataset_api = get_dataset_api(self.benchmark.space_name, task)
+        # get best validation score for scaling
+        self.best_val_acc, _ = self.dataset_api['api'].get_best_archs(task, 'valid_top1', 'micro')[0]
         self._search_sapce = TransNASSearchSpace(self.benchmark, self.dataset_api)
         self._EPOCHS = 10 if task=='jigsaw' else 25
+
+    def get_min_and_max(self):
+        return 0, self.best_val_acc
         
     def query(self, cfg: Dict, budget=None):
         epochs = -1 if budget is None else int(round(budget))

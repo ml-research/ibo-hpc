@@ -3,11 +3,11 @@ from typing import Dict
 class BenchQueryResult(dict):
 
     SUPPORTED_METRICS = ['train_performance', 'val_performance', 'test_performance', 
-                'cost', 'train_loss', 'val_loss', 'test_loss', 'epochs']
+                'cost', 'train_loss', 'val_loss', 'test_loss', 'epochs', 'optim_cost']
 
     def __init__(self, train_performance, val_performance, 
                  test_performance, train_loss=None, val_loss=None, 
-                 test_loss=None, cost=None, epochs=None) -> None:
+                 test_loss=None, cost=None, epochs=None, optim_cost=None) -> None:
         self._train_perf = train_performance
         self._val_perf = val_performance
         self._test_pref = test_performance
@@ -16,6 +16,7 @@ class BenchQueryResult(dict):
         self._test_loss = test_loss
         self._cost = cost
         self._epochs = epochs
+        self._optim_cost = optim_cost
 
     def _to_string(self):
         return "Benchmark Query Result:\n" +\
@@ -47,6 +48,8 @@ class BenchQueryResult(dict):
             return self.cost
         elif key == 'epochs':
             return self.epochs
+        elif key == 'optim_cost':
+            return self._optim_cost
         else:
             raise KeyError(f'No such key: {key}')
 
@@ -56,6 +59,25 @@ class BenchQueryResult(dict):
             This allows us to be flexible and allows to set the costs as needed.
         """
         self._cost = cost
+
+    def set_optim_cost(self, optim_cost):
+        self._optim_cost = optim_cost
+
+    def scale(self, min, max, metric='val'):
+        if metric == 'train':
+            self._train_perf = (self._train_perf - min) / (max - min)
+        elif metric == 'val':
+            self._val_perf = (self._val_perf - min) / (max - min)
+        elif metric == 'test':
+            self._test_perf = (self._test_perf - min) / (max - min)
+
+    def inv_scale(self, min, max, metric='val'):
+        if metric == 'train':
+            self._train_perf = self._train_perf * (max - min) + min
+        elif metric == 'val':
+            self._val_perf = self._val_perf * (max - min) + min
+        elif metric == 'test':
+            self._test_perf = self._test_perf * (max - min) + min
 
     @property
     def train_performance(self):
@@ -88,6 +110,10 @@ class BenchQueryResult(dict):
     @property
     def epochs(self):
         return self._epochs
+    
+    @property
+    def optim_cost(self):
+        return self._optim_cost
 
 
 class BaseBenchmark:

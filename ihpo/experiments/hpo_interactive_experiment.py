@@ -5,7 +5,7 @@ from ..optimizers import OptimizerFactory
 class HPOInteractiveExperiment(BenchmarkExperiment):
 
     def __init__(self, optimizer_name, intervention_iter=50, intervention_duration=1,
-                 intervention_type='good', task=167120) -> None:
+                 intervention_type='good', task=167120, seed=0) -> None:
         self.benchmark_config = {
             'model': 'xgb',
             'task_id': int(task)

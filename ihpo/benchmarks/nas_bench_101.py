@@ -5,11 +5,12 @@ from naslib.search_spaces.core.query_metrics import Metric
 from naslib.utils import get_dataset_api
 from ..search_spaces import NAS101SearchSpace
 import numpy as np
+import torch
 import networkx as nx
 
 class NAS101Benchmark(BaseBenchmark):
 
-    def __init__(self, task, save_dir='./data/') -> None:
+    def __init__(self, task, save_dir='./benchmark_data/') -> None:
         super().__init__()
         self.benchmark = NasBench101SearchSpace()
         self.task = task

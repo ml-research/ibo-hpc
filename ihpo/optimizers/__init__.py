@@ -1,6 +1,7 @@
 from .optimizer import Optimizer
 from .pc_optimizer import PCOptimizer
-from .pc_trans_optimizer import PCOptimizer as PCTransferOptimizer
+from .gp_optimizer import GPOptimizer
+from .pc_trans_optimizer import PCTransOptimizer
 from .hyperband import HyperbandOptimizer
 from .pibo_optimizer import PiBOptimizer
 from .bounding_box_optimizer import BoundingBoxOptimizer
@@ -10,4 +11,13 @@ from .smac_optimizer import SMACOptimizer
 from .zero_shot_optimizer import ZeroShotOptimizer
 from .ls_optimizer import LocalSearchOptimizer
 from .bopro import BOPrOOptimizer
+from .optuna_bo_optimizer import OptunaBOOptimizer
+from .skoptbo_optimizer import SkOptBOOptimizer
+from .openbox_optimizer import OpenBoxOptimizer
+from .mphd_optimizer import MPHDOptimizer
+from .fsbo_optimizer import FSBOOptimizer
+from .pc_trans_rf_optimizer import PCTransRFOptimizer
+from .ablr_optimizer import ABLROptimizer
+from .het_mtgp_optimizer import HeterogeneousMTGP
+from .einet_optimizer import EinetOptimizer
 from .optimizer_factory import OptimizerFactory

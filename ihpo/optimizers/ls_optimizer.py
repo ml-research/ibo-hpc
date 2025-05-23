@@ -20,7 +20,7 @@ class LocalSearchOptimizer(Optimizer):
         best_score = None
         self.hist = []
         for i in range(self._runs):
-            if i % 50 == 0:
+            if i % 10 == 0:
                 print(f"Iteration {i}/{self._runs}")
             candidates = self.search_space.get_neighbors(best_candidate)
             scores = []

@@ -1,12 +1,12 @@
 from .experiment import BenchmarkExperiment
-from ..benchmarks import BenchmarkFactory
+from ..benchmarks import BenchmarkFactory, BenchQueryResult
 from ..optimizers import OptimizerFactory
 import numpy as np
 from copy import deepcopy
 
 class NASBench101Experiment(BenchmarkExperiment):
 
-    def __init__(self, optimizer_name, task='cifar10') -> None:
+    def __init__(self, optimizer_name, task='cifar10', handle_invalid_configs=False, seed=0) -> None:
         self.benchmark_name = 'nas101'
         self.benchmark_config = {
             'task': task
@@ -16,33 +16,24 @@ class NASBench101Experiment(BenchmarkExperiment):
 
         self._optimizer_name = optimizer_name
         self.optimizer_config = self.get_optimizer_config(benchmark)
+        self._seed = seed
         optimizer = OptimizerFactory.get_optimizer(optimizer_name, self.optimizer_config)   
+        self._handle_invalid_configs = handle_invalid_configs
         super().__init__(benchmark, optimizer)     
 
     def run(self):
         config, performance = self.optimizer.optimize()
-        if self._optimizer_name == 'pc':
-            processed_config = {}
-            for name, idx in config.items():
-                param_def = self.benchmark.search_space.search_space_definition[name]
-                processed_config[name] = param_def['allowed'][int(idx)]
-            config = processed_config
         print((config, performance))
 
     def evaluate_config(self, cfg, budget=None):
         test_cfg = cfg
         if budget is not None:
             budget = self._get_closest_budget(budget)
-        if self._optimizer_name == 'pc':
-            ops = self.benchmark.search_space.operations
-            cfg_copy = deepcopy(cfg)
-            for key, val in cfg.items():
-                if key.startswith('o_') or key.startswith('Op'):
-                    cfg_copy[key] = ops[int(val)]
-            test_cfg = cfg_copy
-        if self.benchmark is not None and self.benchmark.search_space.is_valid(test_cfg):
+        if self.benchmark is not None:
             res = self.benchmark.query(test_cfg, budget)
             return res
+        elif self._handle_invalid_configs:
+            return BenchQueryResult(10.06, 10.06, 10.06, cost=1206.45, epochs=108)
         
     def get_optimizer_config(self, benchmark):
         assert benchmark is not None, 'Something went wrong instantiating the benchmark'
@@ -50,7 +41,9 @@ class NASBench101Experiment(BenchmarkExperiment):
             return {
                 'objective': self.evaluate_config,
                 'search_space': benchmark.search_space,
-                'n_trials': 1000,
+                'n_trials': 2000,
+                'log_hpo_runtime': True,
+                'seed': self._seed
             }
         elif self._optimizer_name == 'hyperband':
             return {
@@ -65,10 +58,10 @@ class NASBench101Experiment(BenchmarkExperiment):
                 'objective': self.evaluate_config,
                 'search_space': benchmark.search_space,
                 'iterations': 100,
-                'samples_per_iter': 20,
-                'use_eic': False,
-                'eic_samplings': 20,
-                #'conditioning_value_quantile': 0.25
+                'num_samples': 20,
+                'use_ei': False,
+                'num_ei_repeats': 20,
+                'pc_type': 'quantile'
             }
         elif self._optimizer_name == 'rs':
             return {
@@ -87,6 +80,19 @@ class NASBench101Experiment(BenchmarkExperiment):
                 'objective': self.evaluate_config,
                 'search_space': benchmark.search_space,
                 'n_trials': 2000,
+            }
+        elif self._optimizer_name == 'optunabo':
+            return {
+                'objective': self.evaluate_config,
+                'search_space': benchmark.search_space,
+                'iterations': 2000
+            }
+        elif self._optimizer_name == 'skoptbo':
+            return {
+                'objective': self.evaluate_config,
+                'search_space': benchmark.search_space,
+                'iterations': 2000,
+                'surrogate': 'rf'
             }
         else:
             raise ValueError(f'No such optimizer: {self._optimizer_name}')

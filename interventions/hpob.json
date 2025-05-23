@@ -1,0 +1,32 @@
+[
+    {
+        "type": "good",
+        "kind": "dist",
+        "intervention": {
+            "eta": {"dist": "uniform", "parameters": [0.45, 0.55]}, 
+            "subsample": {"dist": "uniform", "parameters": [0.55, 0.65]}, 
+            "lambda": {"dist": "uniform", "parameters": [-150, 0]}, 
+            "min_child_weight": {"dist": "uniform", "parameters": [-15, -10]}},
+        "iteration": 5
+    },
+    {
+        "type": "good",
+        "kind": "dist",
+        "intervention": {
+            "num_trees": {"dist": "uniform", "parameters": [1690, 1720]}, 
+            "mtry": {"dist": "uniform", "parameters": [30, 34]},
+            "min_node_size": {"dist": "uniform", "parameters": [780, 800]}
+        },
+        "iteration": 5
+    },
+    {
+        "type": "good",
+        "kind": "dist",
+        "intervention": {
+            "num_trees": {"dist": "int_uniform", "parameters": [1690, 1720]}, 
+            "mtry": {"dist": "int_uniform", "parameters": [280, 320]},
+            "sample_fraction": {"dist": "uniform", "parameters": [0.5, 0.53]}
+        },
+        "iteration": 5
+    }
+]

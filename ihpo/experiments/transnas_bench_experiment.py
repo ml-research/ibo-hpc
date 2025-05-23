@@ -5,7 +5,7 @@ from copy import deepcopy
 
 class TransNASBenchExperiment(BenchmarkExperiment):
 
-    def __init__(self, optimizer_name, task='cifar10') -> None:
+    def __init__(self, optimizer_name, task='cifar10', seed=0) -> None:
         self.benchmark_name = 'transnas'
         self.benchmark_config = {
             'task': task
@@ -19,12 +19,6 @@ class TransNASBenchExperiment(BenchmarkExperiment):
 
     def run(self):
         config, performance = self.optimizer.optimize()
-        if self._optimizer_name == 'pc':
-            processed_config = {}
-            for name, idx in config.items():
-                param_def = self.benchmark.search_space.search_space_definition[name]
-                processed_config[name] = param_def['allowed'][int(idx)]
-            config = processed_config
         print((config, performance))
 
     def evaluate_config(self, cfg, budget=None):
@@ -46,9 +40,21 @@ class TransNASBenchExperiment(BenchmarkExperiment):
             return {
                 'objective': self.evaluate_config,
                 'search_space': benchmark.search_space,
-                'n_trials': 100,
-                'num_iter': 2000,
-                'cfg_selector_retries': 0
+                'n_trials': 2000,
+                'log_hpo_runtime': True
+            }
+        elif self._optimizer_name == 'pibo':
+            return {
+                'objective': self.evaluate_config,
+                'search_space': benchmark.search_space,
+                'n_trials': 2000
+            }
+        elif self._optimizer_name == 'bopro':
+            self.setup_bopro_json(benchmark)
+            return {
+                'objective': self.evaluate_config,
+                'search_space': benchmark.search_space,
+                'exp_json': self._bopro_file_name
             }
         elif self._optimizer_name == 'hyperband':
             return {
@@ -58,26 +64,41 @@ class TransNASBenchExperiment(BenchmarkExperiment):
                 'max_budget': 200,
                 'n_trials': 2000
             }
-        elif self._optimizer_name == 'pc': 
+        elif self._optimizer_name == 'pc':
             return {
                 'objective': self.evaluate_config,
                 'search_space': benchmark.search_space,
                 'iterations': 100,
                 'samples_per_iter': 20,
                 'use_eic': False,
-                'eic_samplings': 20
+                'eic_samplings': 20,
+                'log_hpo_runtime': True
+                #'conditioning_value_quantile': 0.25
             }
         elif self._optimizer_name == 'rs':
             return {
                 'objective': self.evaluate_config,
                 'search_space': benchmark.search_space,
-                'iterations': 2000
+                'iterations': 2000,
             }
         elif self._optimizer_name == 'ls':
             return {
                 'objective': self.evaluate_config,
                 'search_space': benchmark.search_space,
-                'runs': 2000
+                'runs': 150
+            }
+        elif self._optimizer_name == 'optunabo':
+            return {
+                'objective': self.evaluate_config,
+                'search_space': benchmark.search_space,
+                'iterations': 2000
+            }
+        elif self._optimizer_name == 'skoptbo':
+            return {
+                'objective': self.evaluate_config,
+                'search_space': benchmark.search_space,
+                'iterations': 2000,
+                'surrogate': 'rf'
             }
         else:
             raise ValueError(f'No such optimizer: {self._optimizer_name}')

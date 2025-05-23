@@ -1,0 +1,11 @@
+[
+    {
+        "type": "good",
+        "kind": "dist",
+        "intervention": {
+            "hps.lr_hparams.decay_steps_factor": {"dist": "uniform", "parameters": [-0.1, 0.05]}, 
+            "hps.lr_hparams.initial_value": {"dist": "uniform", "parameters": [-1.8, -1.5]}
+        },
+        "iteration": 5
+    }
+]

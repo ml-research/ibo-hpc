@@ -119,6 +119,10 @@ class Configuration(Mapping[str, Any]):
 
             self._vector = _vector
 
+    @property
+    def configuration_space(self):
+        return self.config_space
+
     def is_valid_configuration(self) -> None:
         """Check if the object is a valid.
 

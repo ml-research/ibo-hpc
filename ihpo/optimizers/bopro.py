@@ -19,7 +19,7 @@ class BOPrOOptimizer(Optimizer):
             if res is None:
                 return 0.0
             self.evaluations.append((cfg, res, len(self.evaluations)))
-            return res.val_performance
+            return -res.val_performance
         optimizer.optimize(self.exp_file, _objective_wrapper)
         eval_results = [res.test_performance for _, res, _ in self.evaluations]
         max_idx = eval_results.index(max(eval_results))

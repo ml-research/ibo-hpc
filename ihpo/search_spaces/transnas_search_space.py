@@ -8,6 +8,7 @@ from ConfigSpace.hyperparameters import CategoricalHyperparameter
 import numpy as np
 from copy import deepcopy
 from syne_tune.config_space import Categorical
+from skopt.space import Categorical as CategoricalSkopt
 
 class TransNASSearchSpace(NASLibSearchSpace):
 
@@ -29,17 +30,6 @@ class TransNASSearchSpace(NASLibSearchSpace):
             new_bench.sample_random_architecture(dataset_api=self.dataset_api)
             sample = self.to_dict(new_bench)
             samples.append(sample)
-        #if keep_domain:
-        #    return samples
-        #processed_configs = []
-        #for sample in samples:
-        #    processed_config = deepcopy(sample)
-        #    for name, val in sample.items():
-        #        if name.startswith('Op'):
-        #            idx = self.search_space_definition[name]['allowed'].index(val)
-        #            processed_config[name] = idx
-        #    processed_configs.append(processed_config)
-        #return processed_configs
         return samples
 
     def get_search_space_definition(self):
@@ -70,6 +60,15 @@ class TransNASSearchSpace(NASLibSearchSpace):
             config_space[f'Op_{i}'] = hp
     
         return config_space
+    
+    def to_skopt(self):
+        hp_def = self.to_configspace()
+        space = []
+        for hp_name in hp_def.get_all_unconditional_hyperparameters():
+            hp = hp_def.get_hyperparameter(hp_name)
+            skopt_hp = CategoricalSkopt(hp.choices, name=hp.name)
+            space.append(skopt_hp)
+        return space
     
     def to_dict(self, benchmark: TransBench101SearchSpaceMicro):
         indices = benchmark.get_op_indices()

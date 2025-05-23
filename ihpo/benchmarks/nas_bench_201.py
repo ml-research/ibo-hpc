@@ -8,7 +8,7 @@ from ..search_spaces import NAS201SearchSpace
 
 class NAS201Benchmark(BaseBenchmark):
 
-    def __init__(self, task, save_dir='./data/') -> None:
+    def __init__(self, task, save_dir='./benchmark_data/') -> None:
         super().__init__()
         self.benchmark = NasBench201SearchSpace()
         self.task = task

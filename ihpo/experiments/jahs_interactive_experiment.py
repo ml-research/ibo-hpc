@@ -6,16 +6,18 @@ from copy import deepcopy
 from ConfigSpace import CategoricalHyperparameter, UniformFloatHyperparameter, NormalFloatHyperparameter
 import os
 import numpy as np
+from scipy.special import softmax
 
 class JAHSBenchInteractiveExperiment(BenchmarkExperiment):
 
-    def __init__(self, optimizer_name, interaction_idx, task='cifar10') -> None:
+    def __init__(self, optimizer_name, interaction_idx, task='cifar10', seed=0) -> None:
         self.benchmark_name = 'jahs'
         self.benchmark_config = {
             'task': task
         }
         benchmark = BenchmarkFactory.get_benchmark(self.benchmark_name, 
                                                         self.benchmark_config)
+        self.seed = seed
         self._interaction_idx = interaction_idx
         self._optimizer_name = optimizer_name
         self.optimizer_config = self.get_optimizer_config(benchmark)
@@ -23,7 +25,7 @@ class JAHSBenchInteractiveExperiment(BenchmarkExperiment):
         super().__init__(benchmark, optimizer)     
 
     def run(self):
-        if self._optimizer_name == 'pc':
+        if self._optimizer_name == 'pc' or self._optimizer_name == 'rs':
             interventions, iterations = self.get_pc_interventions()
             self.optimizer.intervene(interventions, iterations)
         elif self._optimizer_name == 'bopro':
@@ -34,28 +36,11 @@ class JAHSBenchInteractiveExperiment(BenchmarkExperiment):
             intervention = self.get_pibo_intervention()
             self.optimizer.intervene(intervention)
         config, performance = self.optimizer.optimize()
-        if self._optimizer_name == 'pc':
-            processed_config = {}
-            for name, idx in config.items():
-                param_def = self.benchmark.search_space.search_space_definition[name]
-                if 'allowed' in list(param_def.keys()):
-                    processed_config[name] = param_def['allowed'][int(idx)]
-                else:
-                    processed_config[name] = idx
-            config = processed_config
         print((config, performance))
 
     def evaluate_config(self, cfg, budget=None):
-        test_cfg = cfg
-        if self._optimizer_name == 'pc':
-            to_be_transformed = ['Activation', 'W', 'N', 'Op1', 'Op2', 'Op3', 'Op4', 'Op5', 'Op6', 'TrivialAugment']
-            search_space_def = self.benchmark.search_space.get_search_space_definition()
-            cfg_copy = deepcopy(cfg)
-            for key, val in cfg.items():
-                if key in to_be_transformed:
-                    cfg_copy[key] = search_space_def[key]['allowed'][int(val)]
-            test_cfg = cfg_copy
-        elif self._optimizer_name == 'bopro':
+        test_cfg = deepcopy(cfg)
+        if self._optimizer_name == 'bopro':
             cfg_copy = deepcopy(cfg)
             for key, val in cfg.items():
                 if key == 'TrivialAugment':
@@ -76,7 +61,8 @@ class JAHSBenchInteractiveExperiment(BenchmarkExperiment):
             return {
                 'objective': self.evaluate_config,
                 'search_space': benchmark.search_space,
-                'n_trials': 2000
+                'n_trials': 2000,
+                'seed': self.seed
             }
         elif self._optimizer_name == 'bopro':
             self.setup_bopro_json(benchmark)
@@ -90,10 +76,16 @@ class JAHSBenchInteractiveExperiment(BenchmarkExperiment):
                 'objective': self.evaluate_config,
                 'search_space': benchmark.search_space,
                 'iterations': 100,
-                'samples_per_iter': 20,
-                'use_eic': False,
-                'eic_samplings': 20,
+                'num_samples': 20,
+                'use_ei': False,
+                'num_ei_repeats': 20,
                 'interaction_dist_sample_decay': 0.9,
+            },
+        elif self._optimizer_name == 'rs':
+            return {
+                'objective': self.evaluate_config,
+                'search_space': benchmark.search_space,
+                'iterations': 2000,
             }
         else:
             raise ValueError(f'No such optimizer: {self._optimizer_name}')
@@ -118,45 +110,62 @@ class JAHSBenchInteractiveExperiment(BenchmarkExperiment):
                 final_interactions.append(interactions[i])
                 final_iterations.append(interaction_iters[i])
             return final_interactions, final_iterations
-
         
+    
     def get_pibo_intervention(self):
-        n_weights = [1] * len(list(self.benchmark.search_space.config_space['N']))
-        n_weights[3] = 1e4
-        w_weights = [1] * len(list(self.benchmark.search_space.config_space['W']))
-        w_weights[16] = 1e4
-        return {
-                "N": CategoricalHyperparameter('N', list(range(16)), weights=n_weights),
-                "W": CategoricalHyperparameter('W', list(range(32)), weights=w_weights),
-                "Resolution": UniformFloatHyperparameter('Resolution', 0.98, 1.02)
-                }
+        print("Getting PiBO interaction. Iteration will be set to 0 by default.")
+        with open('./interventions/jahs_cifar10.json', 'r') as f:
+            ints_json = list(json.load(f))
+        interaction = ints_json[self._interaction_idx[0]]
+        if interaction['kind'] != 'dist':
+            raise ValueError('PiBO only supports distributions as user input!')
+        interaction_spec = interaction['intervention']
+        interaction_dict = {}
+        for k, v in interaction_spec.items():
+            if v['dist'] == 'cat':
+                weights = v['parameters']
+                weights = softmax(weights)
+                hp = CategoricalHyperparameter(k, v['values'], weights=weights)
+            elif v['dist'] == 'uniform':
+                mi, ma = v['parameters']
+                hp = UniformFloatHyperparameter(k, mi, ma)
+            elif v['dist'] == 'gauss':
+                mean, std = v['parameters']
+                hp = NormalFloatHyperparameter(k, mean, std)
+            
+            interaction_dict[k] = hp
+        
+        return interaction_dict
 
     def get_bopro_intervention(self):
-        n_weights = [1] * len(list(self.benchmark.search_space.config_space['N']))
-        n_weights[3] = 1e4
-        n_weights = list(np.array(n_weights) / sum(n_weights))
-        w_weights = [1] * len(list(self.benchmark.search_space.config_space['W']))
-        w_weights[16] = 1e4
-        w_weights = list(np.array(w_weights) / sum(w_weights))
-        return {
-                "N": {
-                    "prior": n_weights
-                },
-                "W": {
-                    "prior": w_weights
-                },
-                "Resolution": {
-                    "prior": "custom_gaussian" # distribution automatically defined between 0.98 and 1.02 if this interval is set in search space
-                }
-        }
+        print("Getting BOPrO interaction. Iteration will be set to 0 by default.")
+        with open('./interventions/jahs_cifar10.json', 'r') as f:
+            ints_json = list(json.load(f))
+        interaction = ints_json[self._interaction_idx[0]]
+        if interaction['kind'] != 'dist':
+            raise ValueError('BOPrO only supports distributions as user input!')
+        interaction_spec = interaction['intervention']
+        interaction_dict = {}
+        for k, v in interaction_spec.items():
+            if v['dist'] == 'cat':
+                weights = v['parameters']
+                weights = list(softmax(weights))
+                hp = {'prior': weights}
+            elif v['dist'] == 'uniform':
+                mi, ma = v['parameters']
+                hp = {'prior': 'uniform', 'values': [mi, ma]}
+            elif v['dist'] == 'gauss':
+                # TODO: Currently, parameters are set in search space. Should be done here
+                mean, std = v['parameters']
+                hp = {'prior': 'custom_gaussian', 'custom_gaussian_prior_means': [mean], 'custom_gaussian_prior_stds': [std]}
+            
+            interaction_dict[k] = hp
+        
+        return interaction_dict
     
     def setup_bopro_json(self, benchmark):
         search_space = benchmark.search_space
-        search_space.change_search_space('Resolution', [0., 1.3]) # set intervention. must be done here already for JSON file.
         borpo_search_space = search_space.to_hypermapper()
-        borpo_search_space['Resolution']['prior'] = 'custom_gaussian'
-        borpo_search_space['Resolution']['custom_gaussian_prior_means'] = [1.]
-        borpo_search_space['Resolution']['custom_gaussian_prior_stds'] = [0.3]
         json_dict = {
             "application_name": "JAHS Interactive",
             "optimization_objectives": ["value"],
@@ -169,7 +178,10 @@ class JAHSBenchInteractiveExperiment(BenchmarkExperiment):
             "models": {
                 "model": "random_forest"
             },
-            "input_parameters": borpo_search_space
+            "input_parameters": borpo_search_space,
+            "local_search_starting_points": 10,
+            "local_search_random_points": 50,
+            "local_search_evaluation_limit": 200
         }
         if not os.path.exists('./bopro_experiments/'):
             os.mkdir('./bopro_experiments')
