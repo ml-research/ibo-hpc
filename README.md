@@ -1,6 +1,5 @@
-# Interactive Hyperparameter Optimization via Probabilistic Circuits
-This repository contains the code of `Towards Interactive Hyperparameter Optimization
-with Probabilistic Circuits`.
+# Hyperparameter Optimization via Interacting with Probabilistic Circuits
+This repository contains the code of our AutoML25 paper `Hyperparameter Optimization via Interacting with Probabilistic Circuits`.
 
 ## Abstract
 Despite the growing interest in designing truly interactive hyperparameter optimization (HPO) methods, to date, only a few allow to include human feedback. Existing interactive Bayesian optimization (BO) methods incorporate human beliefs by weighting the acquisition function with a user-defined prior distribution. However, in light of the non-trivial inner optimization of the acquisition function prevalent in BO, such weighting schemes do not always accurately reflect given user beliefs. We introduce a novel BO approach leveraging tractable probabilistic models named probabilistic circuits (PCs) as a surrogate model. PCs encode a tractable joint distribution over the hybrid hyperparameter space and evaluation scores. They enable exact conditional inference and sampling. Based on conditional sampling, we construct a novel selection policy that enables an acquisition function-free generation of candidate points (thereby eliminating the need for an additional inner-loop optimization) and ensures that user beliefs are reflected accurately in the selection policy. We provide a theoretical analysis and an extensive empirical evaluation, demonstrating that our method achieves state-of-the-art performance in standard HPO and outperforms interactive BO baselines in interactive HPO.
